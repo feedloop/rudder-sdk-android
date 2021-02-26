@@ -108,6 +108,11 @@ public class RudderClient {
             // initiate RudderClient instance
             instance = new RudderClient();
 
+            SharedPreferences mSettings = getApplication().getSharedPreferences("aixp-anonymousId", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = mSettings.edit();
+            editor.putString("anonymousId", _anonymousId);
+            editor.apply();
+
             // initiate EventRepository class
             if (application != null && writeKey != null) {
                 RudderLogger.logVerbose("getInstance: creating EventRepository.");
@@ -584,10 +589,6 @@ public class RudderClient {
             return;
         }
         _anonymousId = anonymousId;
-        SharedPreferences mSettings = getApplication().getSharedPreferences("aixp-anonymousId", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = mSettings.edit();
-        editor.putString("anonymousId", anonymousId);
-        editor.apply();
     }
 
     /**
@@ -595,7 +596,7 @@ public class RudderClient {
      */
     public void reset() {
         RudderElementCache.reset();
-        SharedPreferences mSettings = getApplication().getSharedPreferences("aixp-anonymousId", Context.MODE_PRIVATE);
+        SharedPreferences mSettings = getApplication().getApplicationContext().getSharedPreferences("aixp-anonymousId", Context.MODE_PRIVATE);
         mSettings.edit().clear().apply();
         if (repository != null) {
             repository.reset();
