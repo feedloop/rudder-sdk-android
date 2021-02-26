@@ -12,6 +12,7 @@ import com.rudderstack.android.sdk.core.util.Utils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /*
  * Primary class to be used in client
@@ -109,9 +110,12 @@ public class RudderClient {
             instance = new RudderClient();
 
             SharedPreferences mSettings = getApplication().getSharedPreferences("aixp-anonymousId", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = mSettings.edit();
-            editor.putString("anonymousId", _anonymousId);
-            editor.apply();
+            String savedAnonymousId = mSettings.getString("anonymousId", "");
+            if (savedAnonymousId.equals("")) {
+                SharedPreferences.Editor editor = mSettings.edit();
+                editor.putString("anonymousId", _anonymousId);
+                editor.apply();
+            }
 
             // initiate EventRepository class
             if (application != null && writeKey != null) {
@@ -597,7 +601,9 @@ public class RudderClient {
     public void reset() {
         RudderElementCache.reset();
         SharedPreferences mSettings = getApplication().getApplicationContext().getSharedPreferences("aixp-anonymousId", Context.MODE_PRIVATE);
-        mSettings.edit().clear().apply();
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString("anonymousId", UUID.randomUUID().toString());
+        editor.apply();
         if (repository != null) {
             repository.reset();
         }
