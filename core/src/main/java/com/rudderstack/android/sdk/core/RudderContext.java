@@ -80,6 +80,7 @@ public class RudderContext {
                 _anonymousId = savedAnonymousId;
             }
             RudderLogger.logDebug("Using old traits from persistence");
+            RudderLogger.logDebug("Saved anonymousID " + savedAnonymousId);
         }
 
         // get saved external Ids from prefs. if not present set it to null
