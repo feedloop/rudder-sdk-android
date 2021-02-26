@@ -583,6 +583,7 @@ public class RudderClient {
             return;
         }
         _anonymousId = anonymousId;
+        RudderElementCache.setAnonymousId(anonymousId);
     }
 
     /**
