@@ -54,6 +54,9 @@ public class RudderContext {
     RudderContext(Application application, String anonymousId, String advertisingId) {
         this.app = new RudderApp(application);
 
+        if (TextUtils.isEmpty(anonymousId)) {
+            anonymousId = Utils.getDeviceId(application);
+        }
         // get saved traits from prefs. if not present create new one and save
         RudderPreferenceManager preferenceManger = RudderPreferenceManager.getInstance(application);
         String traitsJson = preferenceManger.getTraits();
@@ -62,16 +65,17 @@ public class RudderContext {
             RudderTraits traits = new RudderTraits(anonymousId);
             this.traits = Utils.convertToMap(new Gson().toJson(traits));
             this.persistTraits();
+            _anonymousId = anonymousId;
             RudderLogger.logDebug("New traits has been saved");
         } else {
             this.traits = Utils.convertToMap(traitsJson);
+            Object savedAnonymousId = this.traits.get("anonymousId");
+            if (savedAnonymousId == null) {
+                _anonymousId = anonymousId;
+            } else {
+                _anonymousId = savedAnonymousId.toString();
+            }
             RudderLogger.logDebug("Using old traits from persistence");
-        }
-        Object savedAnonymousId = this.traits.get("anonymousId");
-        if (savedAnonymousId == null) {
-            _anonymousId = Utils.getDeviceId(application);
-        } else {
-            _anonymousId = savedAnonymousId.toString();
         }
 
         // get saved external Ids from prefs. if not present set it to null
