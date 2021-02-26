@@ -3,6 +3,7 @@ package com.rudderstack.android.sdk.core;
 import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.text.TextUtils;
 
@@ -60,6 +61,10 @@ public class RudderContext {
         // get saved traits from prefs. if not present create new one and save
         RudderPreferenceManager preferenceManger = RudderPreferenceManager.getInstance(application);
         String traitsJson = preferenceManger.getTraits();
+
+        SharedPreferences mSettings = application.getApplicationContext().getSharedPreferences("aixp-anonymousId", Context.MODE_PRIVATE);
+        String savedAnonymousId = mSettings.getString("anonymousId", "");
+
         RudderLogger.logDebug(String.format(Locale.US, "Traits from persistence storage%s", traitsJson));
         if (traitsJson == null) {
             RudderTraits traits = new RudderTraits(anonymousId);
@@ -69,11 +74,10 @@ public class RudderContext {
             RudderLogger.logDebug("New traits has been saved");
         } else {
             this.traits = Utils.convertToMap(traitsJson);
-            Object savedAnonymousId = this.traits.get("anonymousId");
-            if (savedAnonymousId == null) {
+            if (savedAnonymousId.equals("")) {
                 _anonymousId = anonymousId;
             } else {
-                _anonymousId = savedAnonymousId.toString();
+                _anonymousId = savedAnonymousId;
             }
             RudderLogger.logDebug("Using old traits from persistence");
         }

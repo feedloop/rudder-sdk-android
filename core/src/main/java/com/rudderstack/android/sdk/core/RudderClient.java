@@ -2,6 +2,7 @@ package com.rudderstack.android.sdk.core;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -583,7 +584,10 @@ public class RudderClient {
             return;
         }
         _anonymousId = anonymousId;
-        RudderElementCache.setAnonymousId(anonymousId);
+        SharedPreferences mSettings = getApplication().getSharedPreferences("aixp-anonymousId", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString("anonymousId", anonymousId);
+        editor.apply();
     }
 
     /**
@@ -591,6 +595,8 @@ public class RudderClient {
      */
     public void reset() {
         RudderElementCache.reset();
+        SharedPreferences mSettings = getApplication().getSharedPreferences("aixp-anonymousId", Context.MODE_PRIVATE);
+        mSettings.edit().clear().apply();
         if (repository != null) {
             repository.reset();
         }
